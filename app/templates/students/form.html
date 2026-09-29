@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit student" if student else "Add student" }}{% endblock %}
+
+{% block content %}
+<h1>{{ "Edit student" if student else "Add student" }}</h1>
+
+{% set f = form if form is not none else {} %}
+{% set current_email = student.user.email if student else f.get("email", "") %}
+
+<form method="POST" class="stacked-form">
+    <div class="form-grid">
+        <div>
+            <label for="full_name">Full name *</label>
+            <input type="text" id="full_name" name="full_name"
+                   value="{{ f.get('full_name', student.full_name if student else '') }}" required>
+        </div>
+
+        <div>
+            <label for="roll_number">Roll number *</label>
+            <input type="text" id="roll_number" name="roll_number"
+                   value="{{ f.get('roll_number', student.roll_number if student else '') }}" required>
+        </div>
+
+        <div>
+            <label for="email">Email (used to log in) *</label>
+            <input type="email" id="email" name="email" value="{{ current_email }}" required>
+        </div>
+
+        <div>
+            <label for="password">{{ "New password (leave blank to keep current)" if student else "Password *" }}</label>
+            <input type="password" id="password" name="password" {% if not student %}required{% endif %}>
+        </div>
+
+        <div>
+            <label for="date_of_birth">Date of birth</label>
+            <input type="date" id="date_of_birth" name="date_of_birth"
+                   value="{{ f.get('date_of_birth', student.date_of_birth if student else '') }}">
+        </div>
+
+        <div>
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+                {% set current_gender = f.get('gender', student.gender if student else '') %}
+                <option value="">Select</option>
+                <option value="male" {% if current_gender == "male" %}selected{% endif %}>Male</option>
+                <option value="female" {% if current_gender == "female" %}selected{% endif %}>Female</option>
+                <option value="other" {% if current_gender == "other" %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" value="{{ f.get('phone', student.phone if student else '') }}">
+        </div>
+
+        <div>
+            <label for="admission_date">Admission date</label>
+            <input type="date" id="admission_date" name="admission_date"
+                   value="{{ f.get('admission_date', student.admission_date if student else '') }}">
+        </div>
+
+        <div class="span-2">
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" value="{{ f.get('address', student.address if student else '') }}">
+        </div>
+
+        <div>
+            <label for="course_id">Course *</label>
+            <select id="course_id" name="course_id" required></select>
+        </div>
+
+        <div>
+            <label for="semester_id">Semester</label>
+            <select id="semester_id" name="semester_id"></select>
+        </div>
+
+        <div>
+            <label for="section_id">Section</label>
+            <select id="section_id" name="section_id"></select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ "Save changes" if student else "Add student" }}</button>
+        <a href="{{ url_for('students.list_students') }}" class="btn btn-link">Cancel</a>
+    </div>
+</form>
+
+<script>
+    // Course -> Semester -> Section cascading dropdowns.
+    // The nested data comes from the server (course_data) rather than
+    // being hard-coded here, so the form always reflects what's really
+    // in the database.
+    const courseData = {{ course_data | tojson }};
+    const selectedCourseId = {{ (f.get('course_id', student.course_id if student else '')) | tojson }};
+    const selectedSemesterId = {{ (f.get('semester_id', student.current_semester_id if student else '')) | tojson }};
+    const selectedSectionId = {{ (f.get('section_id', student.section_id if student else '')) | tojson }};
+
+    initCascadingDropdowns({
+        data: courseData,
+        courseSelectId: "course_id",
+        semesterSelectId: "semester_id",
+        sectionSelectId: "section_id",
+        selectedCourseId: selectedCourseId,
+        selectedSemesterId: selectedSemesterId,
+        selectedSectionId: selectedSectionId,
+    });
+</script>
+{% endblock %}

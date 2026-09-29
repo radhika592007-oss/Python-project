@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Teachers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Teachers</h1>
+    <a href="{{ url_for('teachers.add_teacher') }}" class="btn btn-primary">+ Add teacher</a>
+</div>
+
+<form method="GET" class="filter-bar">
+    <input type="text" name="q" value="{{ filters.q }}" placeholder="Search name or employee code">
+
+    <select name="department_id">
+        <option value="">All departments</option>
+        {% for department in departments %}
+            <option value="{{ department.id }}" {% if filters.department_id == department.id %}selected{% endif %}>{{ department.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="status">
+        <option value="">All statuses</option>
+        <option value="active" {% if filters.status == "active" %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if filters.status == "inactive" %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    <a href="{{ url_for('teachers.list_teachers') }}" class="btn btn-link">Clear</a>
+</form>
+
+<div class="card">
+    {% if teachers %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Employee code</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.employee_code }}</td>
+                <td><a href="{{ url_for('teachers.view_teacher', teacher_id=teacher.id) }}">{{ teacher.full_name }}</a></td>
+                <td>{{ teacher.department.name if teacher.department else "-" }}</td>
+                <td>{{ teacher.designation or "-" }}</td>
+                <td>
+                    <span class="badge {{ 'badge-success' if teacher.is_active_teacher else 'badge-muted' }}">
+                        {{ "Active" if teacher.is_active_teacher else "Inactive" }}
+                    </span>
+                </td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('teachers.edit_teacher', teacher_id=teacher.id) }}">Edit</a>
+                    <form method="POST" action="{{ url_for('teachers.toggle_active', teacher_id=teacher.id) }}"
+                          onsubmit="return confirm('{{ 'Deactivate' if teacher.is_active_teacher else 'Activate' }} {{ teacher.full_name }}?');">
+                        <button type="submit" class="link-button">
+                            {{ "Deactivate" if teacher.is_active_teacher else "Activate" }}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No teachers match these filters.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

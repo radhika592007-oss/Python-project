@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1>Admin Dashboard</h1>
+<p class="page-subtitle">Logged in as {{ current_user.email }} (admin).</p>
+
+<div class="card">
+    <p>
+        This is a placeholder dashboard for Phase 1. Real statistics
+        (total students, teachers, attendance, fees) will be added in
+        Phase 7 once the underlying data exists.
+    </p>
+</div>
+{% endblock %}

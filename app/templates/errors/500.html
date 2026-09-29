@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="error-page">
+        <h1>500</h1>
+        <p>Something went wrong on our end. Please try again shortly.</p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Go to login</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit teacher" if teacher else "Add teacher" }}{% endblock %}
+
+{% block content %}
+<h1>{{ "Edit teacher" if teacher else "Add teacher" }}</h1>
+
+{% set f = form if form is not none else {} %}
+{% set current_email = teacher.user.email if teacher else f.get("email", "") %}
+{% set current_department = f.get('department_id', teacher.department_id if teacher else '') %}
+
+<form method="POST" class="stacked-form">
+    <div class="form-grid">
+        <div>
+            <label for="full_name">Full name *</label>
+            <input type="text" id="full_name" name="full_name"
+                   value="{{ f.get('full_name', teacher.full_name if teacher else '') }}" required>
+        </div>
+
+        <div>
+            <label for="employee_code">Employee code *</label>
+            <input type="text" id="employee_code" name="employee_code"
+                   value="{{ f.get('employee_code', teacher.employee_code if teacher else '') }}" required>
+        </div>
+
+        <div>
+            <label for="email">Email (used to log in) *</label>
+            <input type="email" id="email" name="email" value="{{ current_email }}" required>
+        </div>
+
+        <div>
+            <label for="password">{{ "New password (leave blank to keep current)" if teacher else "Password *" }}</label>
+            <input type="password" id="password" name="password" {% if not teacher %}required{% endif %}>
+        </div>
+
+        <div>
+            <label for="designation">Designation</label>
+            <input type="text" id="designation" name="designation"
+                   value="{{ f.get('designation', teacher.designation if teacher else '') }}" placeholder="e.g. Assistant Professor">
+        </div>
+
+        <div>
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" value="{{ f.get('phone', teacher.phone if teacher else '') }}">
+        </div>
+
+        <div>
+            <label for="department_id">Department *</label>
+            <select id="department_id" name="department_id" required>
+                <option value="">Select department</option>
+                {% for department in departments %}
+                    <option value="{{ department.id }}" {% if current_department|string == department.id|string %}selected{% endif %}>{{ department.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ "Save changes" if teacher else "Add teacher" }}</button>
+        <a href="{{ url_for('teachers.list_teachers') }}" class="btn btn-link">Cancel</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ student.full_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ student.full_name }}</h1>
+    <a href="{{ url_for('students.edit_student', student_id=student.id) }}" class="btn btn-primary">Edit</a>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Personal information</h2>
+    <dl class="detail-grid">
+        <dt>Roll number</dt><dd>{{ student.roll_number }}</dd>
+        <dt>Email</dt><dd>{{ student.user.email }}</dd>
+        <dt>Date of birth</dt><dd>{{ student.date_of_birth or "-" }}</dd>
+        <dt>Gender</dt><dd>{{ student.gender or "-" }}</dd>
+        <dt>Phone</dt><dd>{{ student.phone or "-" }}</dd>
+        <dt>Address</dt><dd>{{ student.address or "-" }}</dd>
+        <dt>Status</dt>
+        <dd>
+            <span class="badge {{ 'badge-success' if student.is_active_student else 'badge-muted' }}">
+                {{ "Active" if student.is_active_student else "Inactive" }}
+            </span>
+        </dd>
+    </dl>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Academic information</h2>
+    <dl class="detail-grid">
+        <dt>Course</dt><dd>{{ student.course.name if student.course else "-" }}</dd>
+        <dt>Semester</dt><dd>{{ student.current_semester.number if student.current_semester else "-" }}</dd>
+        <dt>Section</dt><dd>{{ student.section.name if student.section else "-" }}</dd>
+        <dt>Admission date</dt><dd>{{ student.admission_date or "-" }}</dd>
+    </dl>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Attendance summary</h2>
+    <p class="text-muted">Attendance data will appear here once Phase 4 (Attendance) is built.</p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Marks</h2>
+    <p class="text-muted">Marks will appear here once Phase 5 (Examinations & Marks) is built.</p>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Fee status</h2>
+    <p class="text-muted">Fee status will appear here once Phase 6 (Fees & Payments) is built.</p>
+</div>
+{% endblock %}

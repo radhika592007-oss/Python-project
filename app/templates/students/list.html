@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Students</h1>
+    <a href="{{ url_for('students.add_student') }}" class="btn btn-primary">+ Add student</a>
+</div>
+
+<form method="GET" class="filter-bar">
+    <input type="text" name="q" value="{{ filters.q }}" placeholder="Search name or roll number">
+
+    <select name="course_id">
+        <option value="">All courses</option>
+        {% for course in courses %}
+            <option value="{{ course.id }}" {% if filters.course_id == course.id %}selected{% endif %}>{{ course.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="semester_id">
+        <option value="">All semesters</option>
+        {% for semester in semesters %}
+            <option value="{{ semester.id }}" {% if filters.semester_id == semester.id %}selected{% endif %}>Semester {{ semester.number }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="section_id">
+        <option value="">All sections</option>
+        {% for section in sections %}
+            <option value="{{ section.id }}" {% if filters.section_id == section.id %}selected{% endif %}>Section {{ section.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="status">
+        <option value="">All statuses</option>
+        <option value="active" {% if filters.status == "active" %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if filters.status == "inactive" %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    <a href="{{ url_for('students.list_students') }}" class="btn btn-link">Clear</a>
+</form>
+
+<div class="card">
+    {% if students %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Roll No.</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Semester</th>
+                <th>Section</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.roll_number }}</td>
+                <td><a href="{{ url_for('students.view_student', student_id=student.id) }}">{{ student.full_name }}</a></td>
+                <td>{{ student.course.name if student.course else "-" }}</td>
+                <td>{{ student.current_semester.number if student.current_semester else "-" }}</td>
+                <td>{{ student.section.name if student.section else "-" }}</td>
+                <td>
+                    <span class="badge {{ 'badge-success' if student.is_active_student else 'badge-muted' }}">
+                        {{ "Active" if student.is_active_student else "Inactive" }}
+                    </span>
+                </td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('students.edit_student', student_id=student.id) }}">Edit</a>
+                    <form method="POST" action="{{ url_for('students.toggle_active', student_id=student.id) }}"
+                          onsubmit="return confirm('{{ 'Deactivate' if student.is_active_student else 'Activate' }} {{ student.full_name }}?');">
+                        <button type="submit" class="link-button">
+                            {{ "Deactivate" if student.is_active_student else "Activate" }}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No students match these filters.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

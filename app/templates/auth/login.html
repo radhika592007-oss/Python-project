@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Log in - College Management System{% endblock %}
+
+{% block guest_content %}
+<div class="auth-page">
+    <form class="auth-card" method="POST" action="{{ url_for('auth.login') }}">
+        <h1 class="auth-title">College Management System</h1>
+        <p class="auth-subtitle">Sign in to continue</p>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ email or '' }}" required autofocus>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+
+        <p class="auth-hint">Demo credentials are listed in the project README.</p>
+    </form>
+</div>
+{% endblock %}
