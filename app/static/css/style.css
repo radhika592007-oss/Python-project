@@ -294,7 +294,36 @@ a { color: var(--color-primary); text-decoration: none; }
 }
 
 .badge-success { background: #e6f4ea; color: var(--color-success); }
+.badge-warning { background: #fff8e1; color: var(--color-warning); }
+.badge-danger  { background: #fbe9e7; color: var(--color-danger); }
 .badge-muted   { background: #eef0f3; color: var(--color-text-muted); }
+
+/* ---------- Stat cards (reports dashboard) ---------- */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 18px;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+}
+
+.stat-label {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin: 0;
+}
 
 /* ---------- Empty state ---------- */
 .empty-state {

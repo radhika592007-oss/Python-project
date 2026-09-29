@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{{ fee.title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ fee.title }}</h1>
+    <a href="{{ url_for('fees.edit_fee', fee_id=fee.id) }}" class="btn btn-primary">Edit</a>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Fee details</h2>
+    <dl class="detail-grid">
+        <dt>Student</dt>
+        <dd><a href="{{ url_for('students.view_student', student_id=fee.student_id) }}">{{ fee.student.full_name }}</a> ({{ fee.student.roll_number }})</dd>
+        <dt>Total amount</dt><dd>{{ fee.total_amount | money }}</dd>
+        <dt>Paid</dt><dd>{{ fee.paid_amount() | money }}</dd>
+        <dt>Pending</dt><dd>{{ fee.pending_amount() | money }}</dd>
+        {% set status = fee.status() %}
+        <dt>Status</dt>
+        <dd>
+            <span class="badge {{ 'badge-success' if status == 'paid' else ('badge-warning' if status == 'partial' else 'badge-danger') }}">
+                {{ status | capitalize }}
+            </span>
+        </dd>
+        <dt>Due date</dt><dd>{{ fee.due_date or "-" }}</dd>
+    </dl>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Record a payment</h2>
+    {% if status != "paid" %}
+    <form method="POST" action="{{ url_for('fees.add_payment', fee_id=fee.id) }}" class="stacked-form">
+        <div class="form-grid">
+            <div>
+                <label for="amount">Amount *</label>
+                <input type="number" id="amount" name="amount" min="0.01" step="0.01"
+                       max="{{ fee.pending_amount() }}" required>
+            </div>
+
+            <div>
+                <label for="method">Method *</label>
+                <select id="method" name="method" required>
+                    <option value="">Select method</option>
+                    {% for method in payment_methods %}
+                        <option value="{{ method }}">{{ method | replace("_", " ") | title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="span-2">
+                <label for="receipt_number">Receipt number *</label>
+                <input type="text" id="receipt_number" name="receipt_number"
+                       value="{{ suggested_receipt }}" required>
+                <p class="text-muted">Suggested next receipt for this fee.</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Record payment</button>
+        </div>
+    </form>
+    {% else %}
+    <p class="text-muted">This fee is fully paid - no more payments can be recorded.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2 class="card-title">Payment history</h2>
+    {% if fee.payments %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Receipt no.</th>
+                <th>Date</th>
+                <th>Method</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in fee.payments | sort(attribute="paid_on", reverse=true) %}
+            <tr>
+                <td>{{ payment.receipt_number }}</td>
+                <td>{{ payment.paid_on.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ payment.method | replace("_", " ") | title }}</td>
+                <td>{{ payment.amount | money }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No payments recorded for this fee yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

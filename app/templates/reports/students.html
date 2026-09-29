@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Students report{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Students report</h1>
+    <div>
+        <a href="{{ url_for('reports.students_report', format='csv', q=filters.q, department_id=filters.department_id) }}"
+           class="btn btn-secondary">Download CSV</a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-link">Back to reports</a>
+    </div>
+</div>
+
+<form method="GET" class="filter-bar">
+    <input type="text" name="q" value="{{ filters.q }}" placeholder="Search name or roll number">
+    <select name="department_id">
+        <option value="">All departments</option>
+        {% for department in departments %}
+            <option value="{{ department.id }}" {% if filters.department_id == department.id %}selected{% endif %}>{{ department.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    <a href="{{ url_for('reports.students_report') }}" class="btn btn-link">Clear</a>
+</form>
+
+<div class="card">
+    {% if students %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Roll No.</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Semester</th>
+                <th>Section</th>
+                <th>Billed</th>
+                <th>Paid</th>
+                <th>Pending</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            {% set totals = fee_totals.get(student.id, {"billed": 0.00, "paid": 0.00, "pending": 0.00, "status": "pending"}) %}
+            <tr>
+                <td>{{ student.roll_number }}</td>
+                <td><a href="{{ url_for('students.view_student', student_id=student.id) }}">{{ student.full_name }}</a></td>
+                <td>{{ student.course.name if student.course else "-" }}</td>
+                <td>{{ student.current_semester.number if student.current_semester else "-" }}</td>
+                <td>{{ student.section.name if student.section else "-" }}</td>
+                <td>{{ totals.billed | money }}</td>
+                <td>{{ totals.paid | money }}</td>
+                <td>{{ totals.pending | money }}</td>
+                <td>
+                    {% set status = totals.status %}
+                    <span class="badge {{ 'badge-success' if status == 'paid' else ('badge-warning' if status == 'partial' else 'badge-danger') }}">
+                        {{ status | capitalize }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><p>No students match these filters.</p></div>
+    {% endif %}
+</div>
+{% endblock %}

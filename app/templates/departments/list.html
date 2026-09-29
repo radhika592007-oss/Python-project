@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Departments{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Departments</h1>
+    <a href="{{ url_for('departments.add_department') }}" class="btn btn-primary">+ Add department</a>
+</div>
+
+<div class="card">
+    {% if departments %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Courses</th>
+                <th>Teachers</th>
+                <th>Students</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for department in departments %}
+            <tr>
+                <td>{{ department.code }}</td>
+                <td><a href="{{ url_for('departments.view_department', department_id=department.id) }}">{{ department.name }}</a></td>
+                <td>{{ department.courses | length }}</td>
+                <td>{{ department.teachers | length }}</td>
+                <td>{{ student_counts.get(department.id, 0) }}</td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('departments.edit_department', department_id=department.id) }}">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No departments yet. Add your first one.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

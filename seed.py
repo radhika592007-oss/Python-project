@@ -24,6 +24,8 @@ from app.models.semester import Semester
 from app.models.section import Section
 from app.models.teacher import Teacher
 from app.models.student import Student
+from app.models.fee import Fee
+from app.models.payment import Payment
 
 app = create_app()
 
@@ -125,6 +127,35 @@ with app.app_context():
     )
     db.session.add(student_profile_2)
 
+    # --- demo fee records (so the Fees page isn't empty) ---
+    sem3_fee = Fee(
+        student_id=student_profile.id,
+        title="Semester 3 Tuition Fee",
+        total_amount=50000.0,
+        due_date=date(2025, 12, 15),
+    )
+    db.session.add(sem3_fee)
+    db.session.flush()
+
+    # One payment, so this fee shows as "partial" with a payment history.
+    db.session.add(
+        Payment(
+            fee_id=sem3_fee.id,
+            amount=20000.0,
+            method="upi",
+            receipt_number=f"RCPT-{sem3_fee.id:04d}-001",
+        )
+    )
+
+    db.session.add(
+        Fee(
+            student_id=student_profile_2.id,
+            title="Semester 1 Tuition Fee",
+            total_amount=45000.0,
+            due_date=date(2025, 12, 15),
+        )
+    )
+
     db.session.commit()
 
     print("Seed data created:")
@@ -133,3 +164,4 @@ with app.app_context():
     print("  Teacher 2 -> teacher2@college.edu / teacher123")
     print("  Student 1 -> student@college.edu  / student123")
     print("  Student 2 -> student2@college.edu / student123")
+    print("Fee records: 2 (one partial payment recorded for Student 1)")

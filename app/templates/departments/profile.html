@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ department.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ department.name }}</h1>
+    <a href="{{ url_for('departments.edit_department', department_id=department.id) }}" class="btn btn-primary">Edit</a>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Details</h2>
+    <dl class="detail-grid">
+        <dt>Code</dt><dd>{{ department.code }}</dd>
+        <dt>Created</dt><dd>{{ department.created_at.strftime('%Y-%m-%d') }}</dd>
+    </dl>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Courses</h2>
+    {% if department.courses %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Duration</th>
+                <th>Semesters</th>
+                <th>Students</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in department.courses %}
+            <tr>
+                <td>{{ course.code }}</td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.duration_years }} years</td>
+                <td>{{ course.semesters | length }}</td>
+                <td>{{ course.students | length }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No courses in this department yet.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2 class="card-title">Teachers</h2>
+    {% if department.teachers %}
+    <ul class="plain-list">
+        {% for teacher in department.teachers %}
+            <li>{{ teacher.full_name }} ({{ teacher.employee_code }}) - {{ teacher.designation or "No designation" }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No teachers in this department yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

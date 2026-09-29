@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Fees report{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Fees report</h1>
+    <div>
+        <a href="{{ url_for('reports.fees_report', format='csv', q=filters.q, department_id=filters.department_id, status=filters.status) }}"
+           class="btn btn-secondary">Download CSV</a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-link">Back to reports</a>
+    </div>
+</div>
+
+<form method="GET" class="filter-bar">
+    <input type="text" name="q" value="{{ filters.q }}" placeholder="Search student name or roll number">
+    <select name="department_id">
+        <option value="">All departments</option>
+        {% for department in departments %}
+            <option value="{{ department.id }}" {% if filters.department_id == department.id %}selected{% endif %}>{{ department.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="status">
+        <option value="">All statuses</option>
+        {% for status_name in ["pending", "partial", "paid"] %}
+            <option value="{{ status_name }}" {% if filters.status == status_name %}selected{% endif %}>{{ status_name | capitalize }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    <a href="{{ url_for('reports.fees_report') }}" class="btn btn-link">Clear</a>
+</form>
+
+<div class="card">
+    {% if fees %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Roll No.</th>
+                <th>Student</th>
+                <th>Title</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Pending</th>
+                <th>Status</th>
+                <th>Due date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fee in fees %}
+            <tr>
+                <td>{{ fee.student.roll_number }}</td>
+                <td><a href="{{ url_for('students.view_student', student_id=fee.student_id) }}">{{ fee.student.full_name }}</a></td>
+                <td>{{ fee.title }}</td>
+                <td>{{ fee.total_amount | money }}</td>
+                <td>{{ fee.paid_amount() | money }}</td>
+                <td>{{ fee.pending_amount() | money }}</td>
+                {% set status = fee.status() %}
+                <td>
+                    <span class="badge {{ 'badge-success' if status == 'paid' else ('badge-warning' if status == 'partial' else 'badge-danger') }}">
+                        {{ status | capitalize }}
+                    </span>
+                </td>
+                <td>{{ fee.due_date or "-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><p>No fees match these filters.</p></div>
+    {% endif %}
+</div>
+{% endblock %}

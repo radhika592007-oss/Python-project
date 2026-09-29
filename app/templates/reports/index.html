@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Reports</h1>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <p class="stat-value">{{ counts.students }}</p>
+        <p class="stat-label">Students</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-value">{{ counts.teachers }}</p>
+        <p class="stat-label">Teachers</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-value">{{ counts.departments }}</p>
+        <p class="stat-label">Departments</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-value">{{ counts.courses }}</p>
+        <p class="stat-label">Courses</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-value">{{ money.billed | money }}</p>
+        <p class="stat-label">Fees billed</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-value">{{ money.collected | money }}</p>
+        <p class="stat-label">Collected</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-value">{{ money.pending | money }}</p>
+        <p class="stat-label">Pending</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2 class="card-title">
+        Students by department
+        <a href="{{ url_for('reports.students_report') }}" class="btn btn-link">View students report</a>
+    </h2>
+    {% if dept_rows %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Department</th>
+                <th>Courses</th>
+                <th>Teachers</th>
+                <th>Students</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in dept_rows %}
+            <tr>
+                <td>{{ row.code }}</td>
+                <td>{{ row.name }}</td>
+                <td>{{ row.courses }}</td>
+                <td>{{ row.teachers }}</td>
+                <td>{{ row.students }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No departments yet.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2 class="card-title">
+        Fees by status
+        <a href="{{ url_for('reports.fees_report') }}" class="btn btn-link">View fees report</a>
+    </h2>
+    <dl class="detail-grid">
+        <dt>Paid</dt><dd>{{ fee_status_counts["paid"] }}</dd>
+        <dt>Partial</dt><dd>{{ fee_status_counts["partial"] }}</dd>
+        <dt>Pending</dt><dd>{{ fee_status_counts["pending"] }}</dd>
+    </dl>
+</div>
+{% endblock %}

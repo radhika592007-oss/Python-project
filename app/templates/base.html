@@ -17,9 +17,9 @@
             {% if current_user.is_admin() %}
                 <a href="{{ url_for('students.list_students') }}" class="nav-link">Students</a>
                 <a href="{{ url_for('teachers.list_teachers') }}" class="nav-link">Teachers</a>
-                <a href="#" class="nav-link">Departments</a>
-                <a href="#" class="nav-link">Fees</a>
-                <a href="#" class="nav-link">Reports</a>
+                <a href="{{ url_for('departments.list_departments') }}" class="nav-link">Departments</a>
+                <a href="{{ url_for('fees.list_fees') }}" class="nav-link">Fees</a>
+                <a href="{{ url_for('reports.index') }}" class="nav-link">Reports</a>
             {% elif current_user.is_teacher() %}
                 <a href="#" class="nav-link">My Subjects</a>
                 <a href="#" class="nav-link">Attendance</a>
